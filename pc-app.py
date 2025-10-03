@@ -93,7 +93,7 @@ if model is not None:
             inputs_py = [float(x) for x in inputs]
             prediction_py = float(prediction)
         
-            cursor.execute(sql, inputs + [prediction])
+            cursor.execute(sql, inputs_py + [prediction_py])
             connection.commit()
             cursor.close()
             connection.close()
@@ -102,5 +102,6 @@ if model is not None:
 
         except Exception as e:
             st.error(f"Error al guardar en la base de datos: {e}")
+
 
 
