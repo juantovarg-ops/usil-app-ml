@@ -88,7 +88,11 @@ if model is not None:
                 INSERT INTO pc_ml_diabetes ({feature_columns}, prediction)
                 VALUES ({placeholders})
             """
-
+            
+            # Convertir a tipos nativos de Python
+            inputs_py = [float(x) for x in inputs]
+            prediction_py = float(prediction)
+        
             cursor.execute(sql, inputs + [prediction])
             connection.commit()
             cursor.close()
@@ -98,4 +102,5 @@ if model is not None:
 
         except Exception as e:
             st.error(f"Error al guardar en la base de datos: {e}")
+
 
