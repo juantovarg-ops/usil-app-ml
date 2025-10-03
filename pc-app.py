@@ -69,3 +69,33 @@ if model is not None:
         prediction = model.predict(features_scaled)[0]
 
         st.success(f"Predicción de progresión de la diabetes (medida continua): **{prediction:.2f}**")
+        
+        # Guardar en la base de datos
+        try:
+            connection = psycopg2.connect(
+                user=USER,
+                password=PASSWORD,
+                host=HOST,
+                port=PORT,
+                dbname=DBNAME
+            )
+            cursor = connection.cursor()
+
+            # Crear query dinámicamente según las features
+            feature_columns = ", ".join(model_info["feature_names"])
+            placeholders = ", ".join(["%s"] * (len(inputs) + 1))  # +1 para prediction
+            sql = f"""
+                INSERT INTO pc_ml_diabetes ({feature_columns}, prediction)
+                VALUES ({placeholders})
+            """
+
+            cursor.execute(sql, inputs + [prediction])
+            connection.commit()
+            cursor.close()
+            connection.close()
+
+            st.success("✅ Predicción guardada en la base de datos.")
+
+        except Exception as e:
+            st.error(f"Error al guardar en la base de datos: {e}")
+
